@@ -11,7 +11,8 @@ defmodule HeartbeatCollector do
     import Supervisor.Spec, warn: false
 
     children = [
-      worker(__MODULE__, [], function: :start_server)
+      #worker(__MODULE__, [], function: :start_server),
+      worker(HeartbeatCollector.HeartbeatUpdater, [])
     ]
     opts = [strategy: :one_for_one, name: HeartbeatCollector.Supervisor]
     Supervisor.start_link(children, opts)
