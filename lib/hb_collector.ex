@@ -1,5 +1,6 @@
 defmodule HeartbeatCollector do
   use Application
+  import Supervisor.Spec, warn: false
   @moduledoc """
   HeartbeatCollector keeps the contexts that define your domain
   and business logic.
@@ -8,17 +9,14 @@ defmodule HeartbeatCollector do
   if it comes from the database, an external API or others.
   """
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
 
-    children = [
-      #worker(__MODULE__, [], function: :start_server),
-      worker(HeartbeatCollector.HeartbeatUpdater, [])
-    ]
-    opts = [strategy: :one_for_one, name: HeartbeatCollector.Supervisor]
-    Supervisor.start_link(children, opts)
-  end
+    Supervisor.start_link([worker(HeartbeatCollector.HeartbeatUpdater, [])],
+                          [strategy: :one_for_one, name: HeartbeatCollector.Supervisor])
 
-  def start_server do
-    {:ok, _} = Plug.Adapters.Cowboy.http HeartbeatCollectorWeb.Router, [acceptors: 2]
+    # children = [
+    #   worker(HeartbeatCollector.HeartbeatUpdater, [])
+    # ]
+    # opts = [strategy: :one_for_one, name: HeartbeatCollector.Supervisor]
+    # Supervisor.start_link(children, opts)
   end
 end

@@ -2,8 +2,13 @@
 defmodule HeartbeatCollector.HeartbeatUpdater do
   use GenServer
 
-  def start_link do
+  def start_link(_param) do
     GenServer.start_link(__MODULE__, [])
+  end
+  
+  def poll_health_check do
+    {:ok, response } = HTTPoison.get("http://localhost:4000/api/heartbeats")
+    IO.inspect response
   end
 
   def init(state) do
@@ -12,19 +17,14 @@ defmodule HeartbeatCollector.HeartbeatUpdater do
   end
 
   def handle_info(:poll_health_check, state) do
-    # Do the work you desire here
     schedule_work()
     poll_health_check() # Reschedule once more
     {:noreply, state}
   end
 
-  def poll_health_check do
-    HTTPoison.get("/api/heartbeats")
-    IO.puts "To the moon!"
-  end
 
   defp schedule_work() do
-    Process.send_after(self(), :poll_health_check, 10000) # In 2 secs
+    Process.send_after(self(), :poll_health_check, 5000) # In 2 secs
   end
 end
 

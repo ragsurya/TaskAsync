@@ -5,13 +5,19 @@ defmodule HeartbeatCollector.Application do
 
   use Application
 
+  import Supervisor.Spec, warn: false
+
   def start(_type, _args) do
+
+    # Supervisor.start_link([worker(HeartbeatCollector.HeartbeatUpdater, [])],
+    # [strategy: :one_for_one, name: HeartbeatCollector.Supervisor])
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
       HeartbeatCollector.Repo,
       # Start the endpoint when the application starts
-      HeartbeatCollectorWeb.Endpoint
+      HeartbeatCollectorWeb.Endpoint,
+      HeartbeatCollector.HeartbeatUpdater
       # Starts a worker by calling: HeartbeatCollector.Worker.start_link(arg)
       # {HeartbeatCollector.Worker, arg},
     ]
